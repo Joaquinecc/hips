@@ -11,23 +11,28 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import json
+import os
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
+try:
+    filepath = os.path.join(BASE_DIR, "secrets.json")
+    with open(filepath) as handle:
+        secrets = json.load(handle)
+except IOError:
+    secrets = {"secret_key": "aaa"}
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-c-unv%i2oq(l^s8+7az2xh(6z2ht0(y-18gfwnde*=9p%9epiv'
+SECRET_KEY = secrets.get("secret_key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = secrets.get("debug")
 
-ALLOWED_HOSTS = []
-
-
+ALLOWED_HOSTS = secrets.get("allowed_hosts")
 # Application definition
 
 INSTALLED_APPS = [
@@ -37,6 +42,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 3rd party apps
+    "rest_framework",
+    
+
+    #my apps
+    'task'
 ]
 
 MIDDLEWARE = [
@@ -74,9 +85,13 @@ WSGI_APPLICATION = 'hips.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": secrets.get("db_name"),
+        "USER": secrets.get("db_user"),
+        "PASSWORD": secrets.get("db_password"), 
+        "HOST": secrets.get("db_host"),
+        "PORT": secrets.get("db_port"),
     }
 }
 
