@@ -2,8 +2,12 @@ from django.db import models
 
 # Create your models here.
 
-class HashFil(models.Model):
-    """A model of a rock band."""
+class HashFile(models.Model):
+    name = models.CharField(max_length=500)
     hash = models.CharField(max_length=500)
     path_file = models.CharField(max_length=500, unique=True)
+    
+
+    def __str__(self) -> str:
+        return self.name
 
