@@ -11,3 +11,7 @@ class HashFile(models.Model):
     def __str__(self) -> str:
         return self.name
 
+class WhiteListUser(models.Model):
+    username =models.CharField(max_length=500,unique=True)
+    def __str__(self) -> str:
+        return self.username

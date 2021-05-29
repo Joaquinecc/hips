@@ -2,7 +2,7 @@ from .models import AlarmLogDirectory,AlarmLog
 import datetime
 def add_to_alarm_log(text : str, ip=''):
     timestamp=str(datetime.datetime.now())
-    reason="{} : Reason : {}.{}".format(timestamp,text,ip)
+    reason="{} : Reason : {}.{}. \n".format(timestamp,text,ip)
     new_log_reason=AlarmLog(reason=reason)
     new_log_reason.save()
     try:
