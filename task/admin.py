@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import HashFile, WhiteListUser
-
+from task import models
 # Register your models here.
 
-admin.site.register(HashFile)
-admin.site.register(WhiteListUser)
+admin.site.register(models.HashFile)
+admin.site.register(models.WhiteListUser)
+admin.site.register(models.BlackListApp)

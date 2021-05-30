@@ -1,19 +1,16 @@
-import string
-
-from django.contrib.auth.models import User
-from django.utils.crypto import get_random_string
 import hashlib
 from celery import shared_task
-from  .models import HashFile,WhiteListUser
+from  task import models
 from utils.service import  add_to_alarm_log
 import subprocess
 from utils.models import PromiscuoDirectory
+from .service import kill_process,send_to_quarentine
 @shared_task
 def verify_file_hash():
     """
     Comparamos los hash cargado en la base datos
     """
-    hash_file_array=HashFile.objects.all()
+    hash_file_array=models.HashFile.objects.all()
     for file in hash_file_array:
         try:
             path=file.path_file
@@ -35,7 +32,7 @@ def check_username():
     command_get_user= subprocess.Popen("w -i 2>/dev/null", stdout=subprocess.PIPE, shell=True)
     (output, err) = command_get_user.communicate()
     text_line_input=output.decode("utf-8").split('\n')
-    white_list_username = WhiteListUser.objects.all()
+    white_list_username = models.WhiteListUser.objects.all()
     #removing  from the queue unnecesary data
     text_line_input.pop(0) #Extra data
     text_line_input.pop(0)#Columns name
@@ -52,11 +49,40 @@ def check_username():
            add_to_alarm_log("Suspicious user was logged  ->{} ".format(line)) 
 @shared_task
 def check_log_promicuo():
+    """
+    Verificamos el archivo log para identificar si una interfaz esta en modo promiscuo
+    """
     path=PromiscuoDirectory.objects.all()[0].path
-    command_log=subprocess.Popen("cat "+path+" | grep \"left promisc\"", stdout=subprocess.PIPE, shell=True)
-    (output_off, err) = command_log.communicate()
-    data= output_off.decode("utf-8").split('\n')
+    command_log=subprocess.Popen("cat "+path+" | grep -i promis ", stdout=subprocess.PIPE, shell=True)
+    (output, err) = command_log.communicate()
+    data= output.decode("utf-8").split('\n')
     data.pop() # Last element is just an empty string
     for line in data:
         add_to_alarm_log("Detect Device on promisco mode: {} ".format(line)) 
-    
+
+@shared_task
+def check_promisc_app():
+    """
+    Verificamos que las app en la lista negra no se esten ejecutando. Si se encuentra se elimina
+    """
+    apps=models.BlackListApp.objects.all()
+    for app in apps:
+        name=app.app
+        command=subprocess.Popen("ps aux | grep -i "+name+" | grep -v grep", stdout=subprocess.PIPE, shell=True)
+        (output, err) = command.communicate()
+        data_string= output.decode("utf-8")
+        if data_string == '': #No match
+            continue
+        add_to_alarm_log("App {} was found .  Log Result: -- \n{} \n -- ".format(name,data_string))
+
+        #Prevention
+        data= data_string.split('\n')
+        data.pop() # Last element is just an empty string.
+        for d in data:
+            line=d.split()
+            pid=line[1]
+            file_dir=line[-1]
+            kill_process(pid)
+            send_to_quarentine(file_dir)
+
+        

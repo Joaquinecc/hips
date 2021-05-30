@@ -15,3 +15,8 @@ class WhiteListUser(models.Model):
     username =models.CharField(max_length=500,unique=True)
     def __str__(self) -> str:
         return self.username
+
+class BlackListApp(models.Model):
+    app =models.CharField(max_length=500,unique=True)
+    def __str__(self) -> str:
+        return self.app

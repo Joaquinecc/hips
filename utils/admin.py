@@ -1,7 +1,8 @@
 from django.contrib import admin
-from .models import AlarmLog,AlarmLogDirectory,PrevetionLogDirectory,PromiscuoDirectory
+from utils import models
 # Register your models here.
-admin.site.register(AlarmLog)
-admin.site.register(AlarmLogDirectory)
-admin.site.register(PrevetionLogDirectory)
-admin.site.register(PromiscuoDirectory)
+admin.site.register(models.AlarmLog)
+admin.site.register(models.AlarmLogDirectory)
+admin.site.register(models.PrevetionLogDirectory)
+admin.site.register(models.PromiscuoDirectory)
+admin.site.register(models.QuarentineDirectory)
