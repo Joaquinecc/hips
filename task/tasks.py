@@ -7,8 +7,12 @@ from celery import shared_task
 from  .models import HashFile,WhiteListUser
 from utils.service import  add_to_alarm_log
 import subprocess
+from utils.models import PromiscuoDirectory
 @shared_task
 def verify_file_hash():
+    """
+    Comparamos los hash cargado en la base datos
+    """
     hash_file_array=HashFile.objects.all()
     for file in hash_file_array:
         try:
@@ -22,7 +26,7 @@ def verify_file_hash():
                 add_to_alarm_log("File : {} was modified".format(path))
         except:
             continue
-
+@shared_task
 def check_username():
     """
     Verificamos que los ultimos accesos al sistema sean usuarios que estan en la lista blanca
@@ -46,3 +50,13 @@ def check_username():
                 match=True
         if match != True: #The user is no on the white list
            add_to_alarm_log("Suspicious user was logged  ->{} ".format(line)) 
+@shared_task
+def check_log_promicuo():
+    path=PromiscuoDirectory.objects.all()[0].path
+    command_log=subprocess.Popen("cat "+path+" | grep \"left promisc\"", stdout=subprocess.PIPE, shell=True)
+    (output_off, err) = command_log.communicate()
+    data= output_off.decode("utf-8").split('\n')
+    data.pop() # Last element is just an empty string
+    for line in data:
+        add_to_alarm_log("Detect Device on promisco mode: {} ".format(line)) 
+    
