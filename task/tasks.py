@@ -1,10 +1,13 @@
 import hashlib
+from os import utime
 from celery import shared_task
 from  task import models
-from utils.service import  add_to_alarm_log
+from utils.service import  add_to_alarm_log, add_to_prevention_log
 import subprocess
-from utils.models import PromiscuoDirectory
-from .service import kill_process,send_to_quarentine
+from utils.models import PromiscuoDirectory,SecureLogDirectory
+from .service import kill_process,send_to_quarentine,block_user
+import datetime
+
 @shared_task
 def verify_file_hash():
     """
@@ -85,4 +88,32 @@ def check_promisc_app():
             kill_process(pid)
             send_to_quarentine(file_dir)
 
-        
+@shared_task
+def check_fail_auth():
+    """
+    Look at the secure log if there was a multiple failed login attempt
+        """
+    threshold_fail_authentication_alarm=1
+    threshold_fail_authentication_prevention=1
+    path=SecureLogDirectory.objects.all()[0].path
+    temp = datetime.datetime.now()
+    date =temp.strftime("%b  %-d")
+    import subprocess
+    command=subprocess.Popen("grep -i "+'"'+ date+'"' +" " +path+ " | grep -i \"authentication failure\"", stdout=subprocess.PIPE, shell=True)
+    (output, err) = command.communicate()
+    data_string= output.decode("utf-8")
+    data=data_string.split("\n")
+    data.pop() #Last element is just an empty string.
+    user_failed_count={}
+    for line in data:
+        username = line.split()[-1].replace("user=","")
+        user_failed_count[username]= 1 if username not in user_failed_count  else user_failed_count[username]+1
+    print(user_failed_count)
+    for username in user_failed_count:
+        if user_failed_count[username] > threshold_fail_authentication_alarm:
+            add_to_alarm_log("user:{} fail attemp {} time ".format(username,user_failed_count[username]))
+        if user_failed_count[username] > threshold_fail_authentication_prevention:
+            add_to_prevention_log("Block user:{} fail attemp {} time ".format(username,user_failed_count[username]))
+            block_user(username)
+    
+    
