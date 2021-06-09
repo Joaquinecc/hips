@@ -29,10 +29,17 @@ def block_ip(ip):
 def block_user(username):
     pass
 
-def prevention_smpt_log_service(data,path):
+def prevention_user(data,path):
     for username in data:
         if data[username] > threshold_fail_authentication_alarm:
             add_to_alarm_log("user:{}. {} failed login attempt. Log: {} ".format(username,data[username],path))
         if data[username] > threshold_fail_authentication_prevention:
             add_to_prevention_log("Block user:{}. {} failed login attempt. Log: {} ".format(username,data[username],path))
             block_user(username)
+def prevention_ip_accces_log(data,path):
+    for ip in data:
+        if data[ip] > threshold_fail_authentication_alarm:
+            add_to_alarm_log("ip:{}. {} error downloading pages. Log {} ".format(ip,data[ip],path))
+        if data[ip] > threshold_fail_authentication_prevention:
+            add_to_prevention_log("Block ip:{}. {} error downloading pages. Log {} ".format(ip,data[ip],path))
+            block_ip(ip)

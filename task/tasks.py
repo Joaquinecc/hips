@@ -4,8 +4,8 @@ from celery import shared_task
 from  task import models
 from utils.service import  add_to_alarm_log, add_to_prevention_log
 import subprocess
-from utils.models import PromiscuoDirectory,SecureLogDirectory,MessageLogDirectory
-from .service import kill_process,send_to_quarentine,block_user,prevention_smpt_log_service
+from utils.models import PromiscuoDirectory,SecureLogDirectory,MessageLogDirectory,HttpAccesLogDirectory
+from .service import kill_process,send_to_quarentine,block_user,prevention_user,prevention_ip_accces_log
 import datetime
 
 @shared_task
@@ -93,6 +93,7 @@ def check_fail_auth_log_secure_smpt():
     """
     Look at the secure log if there was a multiple failed login attempt
         """
+
     path=SecureLogDirectory.objects.all()[0].path
     temp = datetime.datetime.now()
     date =temp.strftime("%b  %-d")
@@ -105,7 +106,7 @@ def check_fail_auth_log_secure_smpt():
     for line in data:
         username = line.split()[-1].replace("user=","")
         user_failed_count[username]= 1 if username not in user_failed_count  else user_failed_count[username]+1
-    prevention_smpt_log_service(user_failed_count,path)
+    prevention_user(user_failed_count,path)
 
     
 @shared_task
@@ -113,7 +114,6 @@ def check_fail_auth_log_messages_smpt():
     """
     Look at the secure log if there was a multiple failed login attempt
         """    
-
     path=MessageLogDirectory.objects.all()[0].path
     temp = datetime.datetime.now()
     date =temp.strftime("%b  %-d")
@@ -126,10 +126,25 @@ def check_fail_auth_log_messages_smpt():
     for line in data:
         username = line.split()[9].replace("[user=","").replace(']',"")
         user_failed_count[username]= 1 if username not in user_failed_count  else user_failed_count[username]+1
-    prevention_smpt_log_service(user_failed_count,path)
+    prevention_user(user_failed_count,path)
 
+@shared_task
+def check_acces_log():
+    """
+    Look at the secure log if there was a multiple failed login attempt
+        """  
+    path=HttpAccesLogDirectory.objects.all()[0].path
+    temp = datetime.datetime.now()
+    date =temp.strftime("%-d/%b/%Y")
+    command=subprocess.Popen("grep -i "+'"'+ date+'"' +" " +path+ " | grep -i 404", stdout=subprocess.PIPE, shell=True)
+    (output, err) = command.communicate()
+    data_string= output.decode("utf-8")
+    data=data_string.split("\n") 
+    data.pop() #Last element is just an empty string.
+    ip_count={}
+    for line in data:
+        ip = line.split()[0]
+        ip_count[ip]= 1 if ip not in ip_count  else ip_count[ip]+1
+    prevention_ip_accces_log(ip_count,path) 
+    
 
-
-
-# from task.tasks import check_fail_auth_log_messages_smpt
-# check_fail_auth_log_messages_smpt()

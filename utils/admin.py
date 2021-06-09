@@ -8,5 +8,7 @@ admin.site.register(models.PromiscuoDirectory)
 admin.site.register(models.QuarentineDirectory)
 admin.site.register(models.SecureLogDirectory)
 admin.site.register(models.MessageLogDirectory)
+admin.site.register(models.HttpAccesLogDirectory)
+
 
 
