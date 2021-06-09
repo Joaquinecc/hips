@@ -37,3 +37,7 @@ class SecureLogDirectory(models.Model):
     path = models.CharField(max_length=500)
     def __str__(self) -> str:
         return self.path
+class MessageLogDirectory(models.Model):
+    path = models.CharField(max_length=500)
+    def __str__(self) -> str:
+        return self.path
