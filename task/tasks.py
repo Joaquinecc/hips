@@ -4,8 +4,8 @@ from celery import shared_task
 from  task import models
 from utils.service import  add_to_alarm_log, add_to_prevention_log
 import subprocess
-from utils.models import PromiscuoDirectory,SecureLogDirectory,MessageLogDirectory,HttpAccesLogDirectory
-from .service import kill_process,send_to_quarentine,block_user,prevention_user,prevention_ip_accces_log
+from utils.models import PromiscuoDirectory,SecureLogDirectory,MessageLogDirectory,HttpAccesLogDirectory,MailLogDirectory
+from .service import kill_process,send_to_quarentine,block_user,prevention_user,prevention_ip_accces_log,prevention_email
 import datetime
 
 @shared_task
@@ -147,4 +147,24 @@ def check_acces_log():
         ip_count[ip]= 1 if ip not in ip_count  else ip_count[ip]+1
     prevention_ip_accces_log(ip_count,path) 
     
+@shared_task
+def check_mailog():
+    """
+    Look at the mailo log to check multiple email sent in a shor period time by a user
+        """  
+    path=MailLogDirectory.objects.all()[0].path
+    temp = datetime.datetime.now()
+    date =temp.strftime("%b  %-d")
+    command=subprocess.Popen("grep -i "+'"'+ date+'"' +" " +path+ " | grep -i \"from=<\"", stdout=subprocess.PIPE, shell=True)
+    (output, err) = command.communicate()
+    data_string= output.decode("utf-8")
+    data=data_string.split("\n") 
+    data.pop() #Last element is just an empty string.
+    email_acount_counter={}
+    for line in data:
+        email = line.split()[6].replace("from=<",'').replace(">,",'')
+        email_acount_counter[email]= 1 if email not in email_acount_counter  else email_acount_counter[email]+1
+    prevention_email(email_acount_counter,path) 
 
+from task.tasks import check_mailog
+check_mailog()

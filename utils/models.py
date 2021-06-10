@@ -45,4 +45,8 @@ class HttpAccesLogDirectory(models.Model):
     path = models.CharField(max_length=500)
     def __str__(self) -> str:
         return self.path
+class MailLogDirectory(models.Model):
+    path = models.CharField(max_length=500)
+    def __str__(self) -> str:
+        return self.path
 

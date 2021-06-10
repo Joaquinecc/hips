@@ -28,6 +28,8 @@ def block_ip(ip):
     pass
 def block_user(username):
     pass
+def block_email(email):
+    pass
 
 def prevention_user(data,path):
     for username in data:
@@ -43,3 +45,10 @@ def prevention_ip_accces_log(data,path):
         if data[ip] > threshold_fail_authentication_prevention:
             add_to_prevention_log("Block ip:{}. {} error downloading pages. Log {} ".format(ip,data[ip],path))
             block_ip(ip)
+def prevention_email(data,path):
+    for email in data:
+        if data[email] > threshold_fail_authentication_alarm:
+            add_to_alarm_log("email:{}. massive mail sent ({} email) . Log {} ".format(email,data[email],path))
+        if data[email] > threshold_fail_authentication_prevention:
+            add_to_prevention_log("Block email:{}. massive mail sent ({} email) . Log {} ".format(email,data[email],path))
+            block_email(email)
