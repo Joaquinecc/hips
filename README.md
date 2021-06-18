@@ -11,3 +11,6 @@ python
 celery -A hips worker -l INFO
 
  celery -A hips beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+
+
+ https://www.techbrown.com/bash-script-install-qmail-server-centos-rhel/

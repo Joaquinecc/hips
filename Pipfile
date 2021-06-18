@@ -10,6 +10,7 @@ psycopg2 = "*"
 install = "*"
 celery = "*"
 django-celery-beat = "*"
+psutil = "*"
 
 [dev-packages]
 
