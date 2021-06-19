@@ -62,3 +62,6 @@ class ScriptType(models.Model):
     type=models.CharField(max_length=20)
     def __str__(self) -> str:
         return self.type
+class Threshold(models.Model):
+    threshold_fail_authentication_alarm=models.PositiveBigIntegerField()
+    threshold_fail_authentication_prevention=models.PositiveBigIntegerField()

@@ -96,10 +96,10 @@ def check_fail_auth_log_secure_smpt():
     Look at the secure log if there was a multiple failed login attempt
         """
 
-    path=SecureLogDirectory.objects.all()[0].path
+    path=SecureLogDirectory.objects.all().first().path
     temp = datetime.datetime.now()
     date =temp.strftime("%b  %-d")
-    command=subprocess.Popen("grep -i "+'"'+ date+'"' +" " +path+ " | grep -i \"authentication failure\"", stdout=subprocess.PIPE, shell=True)
+    command=subprocess.Popen("grep -i "+'"'+ date+'"' +" " +path+ " | grep -i \"authentication failure\" | grep -i smpt", stdout=subprocess.PIPE, shell=True)
     (output, err) = command.communicate()
     data_string= output.decode("utf-8")
     data=data_string.split("\n")
@@ -205,6 +205,26 @@ def check_cronjobs():
         if data:
             add_to_alarm_log("Found script type {} on crontab list.\n Log: \n {}".format(endpoint,data))
 
-
+@shared_task
+def check_fail_login_attemp():
+    threshold_fail_authentication_alarm=umodels.Threshold.objects.all().first().threshold_fail_authentication_alarm
+    path=SecureLogDirectory.objects.all().first().path
+    temp = datetime.datetime.now()
+    date =temp.strftime("%b  %-d")
+    command=subprocess.Popen("grep -i "+'"'+ date+'"' +" " +path+ " | grep -i \"authentication failure\"", stdout=subprocess.PIPE, shell=True)
+    (output, err) = command.communicate()
+    data_string= output.decode("utf-8")
+    data=data_string.split("\n")
+    data.pop() #Last element is just an empty string.
+    user_failed_count={}
+    for line in data:
+        username = line.split()[-1].replace("user=","")
+        user_failed_count[username]= 1 if username not in user_failed_count  else user_failed_count[username]+1
+    for data in user_failed_count:
+        if data[username] > threshold_fail_authentication_alarm:
+            add_to_alarm_log("user:{}. {} failed login attempt. Log: {} ".format(username,data[username],path))
 
     
+@shared_task
+def ddos_dns():
+    pass

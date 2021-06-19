@@ -1,11 +1,11 @@
 import subprocess
-from utils.models import QuarentineDirectory
+from utils.models import QuarentineDirectory,Threshold
 from utils.service import  add_to_alarm_log, add_to_prevention_log
 
 
 #Global Variable
-threshold_fail_authentication_alarm=1
-threshold_fail_authentication_prevention=1
+threshold_fail_authentication_alarm=Threshold.objects.all().first().threshold_fail_authentication_alarm
+threshold_fail_authentication_prevention=Threshold.objects.all().first().threshold_fail_authentication_prevention
 
 
 def kill_process(pid):
