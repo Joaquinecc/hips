@@ -196,5 +196,15 @@ def check_tmp_directory():
             add_to_alarm_log("Found file {}  inside folder /tmp".format(file))
             add_to_prevention_log("Send to quarantine file {} found inside folder /tmp".format(file))
             send_to_quarentine("/tmp/{}".format(file))
+@shared_task
+def check_cronjobs():
+    for endpoint in umodels.ScriptType.objects.all():
+        command=subprocess.Popen("crontab -l | grep .{}".format(endpoint), stdout=subprocess.PIPE, shell=True)
+        (output, err) = command.communicate()
+        data= output.decode("utf-8")
+        if data:
+            add_to_alarm_log("Found script type {} on crontab list.\n Log: \n {}".format(endpoint,data))
+
+
 
     

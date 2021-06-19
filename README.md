@@ -82,9 +82,9 @@ pipenv install
 
 python manage.py migrate
 
-python manage.py createsuper user
+python manage.py createsuperuser
 
-python manage.py runserver
+python manage.py runserver 0.0.0.0:80
 
 celery -A hips worker -l INFO
 
