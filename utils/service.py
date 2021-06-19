@@ -27,3 +27,5 @@ def add_to_prevention_log(text : str, ip=''):
         f.write(reason)
     except:
         print("Not able to open {}".format(path))
+    send_mail("Prevtion action ",reason,settings.DEFAULT_FROM_EMAIL,[settings.DEFAULT_FROM_EMAIL],fail_silently=False,)
+    
