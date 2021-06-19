@@ -10,6 +10,11 @@ admin.site.register(models.SecureLogDirectory)
 admin.site.register(models.MessageLogDirectory)
 admin.site.register(models.HttpAccesLogDirectory)
 admin.site.register(models.MailLogDirectory)
+admin.site.register(models.MailQueueLimit)
+admin.site.register(models.ProcessConsumeLimit)
+admin.site.register(models.ScriptType)
+admin.site.register(models.Threshold)
+
 
 
 

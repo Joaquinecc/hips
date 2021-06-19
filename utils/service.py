@@ -1,5 +1,7 @@
 from .models import AlarmLogDirectory,AlarmLog,PreventionLog,PrevetionLogDirectory
 import datetime
+from django.core.mail import send_mail
+from django.conf import settings
 def add_to_alarm_log(text : str, ip=''):
     timestamp=str(datetime.datetime.now())
     reason="{} : Reason : {}.{}. \n".format(timestamp,text,ip)
@@ -11,6 +13,8 @@ def add_to_alarm_log(text : str, ip=''):
         f.write(reason)
     except:
         print("Not able to open alarm.log")
+    
+    send_mail("Alarm Off",reason,settings.DEFAULT_FROM_EMAIL,[settings.DEFAULT_FROM_EMAIL],fail_silently=False,)
 
 def add_to_prevention_log(text : str, ip=''):
     timestamp=str(datetime.datetime.now())

@@ -220,9 +220,9 @@ def check_fail_login_attemp():
     for line in data:
         username = line.split()[-1].replace("user=","")
         user_failed_count[username]= 1 if username not in user_failed_count  else user_failed_count[username]+1
-    for data in user_failed_count:
-        if data[username] > threshold_fail_authentication_alarm:
-            add_to_alarm_log("user:{}. {} failed login attempt. Log: {} ".format(username,data[username],path))
+    for username in user_failed_count:
+        if user_failed_count[username] > threshold_fail_authentication_alarm:
+            add_to_alarm_log("user:{}. {} failed login attempt. Log: {} ".format(username,user_failed_count[username],path))
 
     
 @shared_task
