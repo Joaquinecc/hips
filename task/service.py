@@ -28,11 +28,11 @@ def block_ip(ip):
     """
     Block ip
     """
-	p =subprocess.Popen("iptables -I INPUT -s "+ip+" -j DROP", stdout=subprocess.PIPE, shell=True)
-	(output, err) = p.communicate()
+    p =subprocess.Popen("iptables -I INPUT -s "+ip+" -j DROP", stdout=subprocess.PIPE, shell=True)
+    (output, err) = p.communicate()
 
-	p =subprocess.Popen("service iptables save", stdout=subprocess.PIPE, shell=True)
-	(output, err) = p.communicate()
+    p =subprocess.Popen("service iptables save", stdout=subprocess.PIPE, shell=True)
+    (output, err) = p.communicate()
 
 
 
@@ -40,7 +40,6 @@ def block_user(username):
     """
     Change user shell
     """
-
     p =subprocess.Popen("usermod -s /sbin/nologin {}".format(username), stdout=subprocess.PIPE, shell=True)
     (output, err) = p.communicate()
 
