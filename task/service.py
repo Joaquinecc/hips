@@ -25,9 +25,26 @@ def send_to_quarentine(file_dir):
     (output, err) = p.communicate()
 
 def block_ip(ip):
-    pass
+    """
+    Block ip
+    """
+	p =subprocess.Popen("iptables -I INPUT -s "+ip+" -j DROP", stdout=subprocess.PIPE, shell=True)
+	(output, err) = p.communicate()
+
+	p =subprocess.Popen("service iptables save", stdout=subprocess.PIPE, shell=True)
+	(output, err) = p.communicate()
+
+
+
 def block_user(username):
-    pass
+    """
+    Block user
+    """
+
+    p =subprocess.Popen("usermod -s /sbin/nologin {}".format(username), stdout=subprocess.PIPE, shell=True)
+    (output, err) = p.communicate()
+
+    return output.decode("utf-8")
 def block_email(email):
     pass
 
