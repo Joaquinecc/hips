@@ -39,7 +39,7 @@ class MailLogDirectory(models.Model):
 class MailQueueLimit(models.Model):
     qty=models.PositiveBigIntegerField()
     def __str__(self) -> str:
-        return self.qty
+        return "limite : " + str(self.qty)
 class ProcessConsumeLimit(models.Model):
     max_cpu=models.PositiveBigIntegerField()
     max_ram=models.PositiveBigIntegerField()
