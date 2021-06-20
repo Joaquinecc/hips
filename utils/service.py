@@ -1,4 +1,5 @@
-from .models import AlarmLogDirectory,AlarmLog,PreventionLog,PrevetionLogDirectory
+from .models import AlarmLogDirectory,PrevetionLogDirectory
+from log.models import AlarmLog,PreventionLog
 import datetime
 from django.core.mail import send_mail
 from django.conf import settings

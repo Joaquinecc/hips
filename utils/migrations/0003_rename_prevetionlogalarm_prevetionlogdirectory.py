@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('utils', '0002_alarmlog'),
+        ('utils', '0001_initial'),
     ]
 
     operations = [

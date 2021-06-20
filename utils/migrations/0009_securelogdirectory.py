@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('utils', '0008_rename_prevetionlog_preventionlog'),
+         ('utils', '0006_quarentinedirectory'),
     ]
 
     operations = [

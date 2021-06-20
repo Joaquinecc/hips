@@ -48,7 +48,8 @@ INSTALLED_APPS = [
 
     #my apps
     'task',
-    'utils'
+    'utils',
+    'log'
 ]
 
 MIDDLEWARE = [

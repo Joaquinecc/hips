@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('utils', '0005_alter_alarmlog_reason'),
+       ('utils', '0004_promiscuodirectory'),
     ]
 
     operations = [
