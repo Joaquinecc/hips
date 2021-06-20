@@ -57,7 +57,7 @@ def check_log_promicuo():
     """
     Verificamos el archivo log para identificar si una interfaz esta en modo promiscuo
     """
-    path=PromiscuoDirectory.objects.all()[0].path
+    path=PromiscuoDirectory.objects.all().first().path
     command_log=subprocess.Popen("cat "+path+" | grep -i promis ", stdout=subprocess.PIPE, shell=True)
     (output, err) = command_log.communicate()
     data= output.decode("utf-8").split('\n')
@@ -68,7 +68,7 @@ def check_log_promicuo():
 @shared_task
 def check_promisc_app():
     """
-    Verificamos que las app en la lista negra no se esten ejecutando. Si se encuentra se elimina
+    Verificamos que  app en la lista negra no se esten ejecutando. Si se encuentra se elimina
     """
     apps=models.BlackListApp.objects.all()
     for app in apps:
@@ -99,7 +99,7 @@ def check_fail_auth_log_secure_smpt():
     path=SecureLogDirectory.objects.all().first().path
     temp = datetime.datetime.now()
     date =temp.strftime("%b  %-d")
-    command=subprocess.Popen("grep -i "+'"'+ date+'"' +" " +path+ " | grep -i \"authentication failure\" | grep -i smpt", stdout=subprocess.PIPE, shell=True)
+    command=subprocess.Popen("grep -i "+'"'+ date+'"' +" " +path+ " | grep -i \"authentication failure\" | grep -i smtp", stdout=subprocess.PIPE, shell=True)
     (output, err) = command.communicate()
     data_string= output.decode("utf-8")
     data=data_string.split("\n")

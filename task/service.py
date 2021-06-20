@@ -38,7 +38,7 @@ def block_ip(ip):
 
 def block_user(username):
     """
-    Block user
+    Change user shell
     """
 
     p =subprocess.Popen("usermod -s /sbin/nologin {}".format(username), stdout=subprocess.PIPE, shell=True)
