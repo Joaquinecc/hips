@@ -33,6 +33,7 @@ def check_username():
     """
     Verificamos que los ultimos accesos al sistema sean usuarios que estan en la lista blanca
     En caso contrario enviamos una alaram
+    El model task.WhileListUser indica los usuarios validos
     """
     command_get_user= subprocess.Popen("w -i 2>/dev/null", stdout=subprocess.PIPE, shell=True)
     (output, err) = command_get_user.communicate()
@@ -69,6 +70,7 @@ def check_log_promicuo():
 def check_promisc_app():
     """
     Verificamos que  app en la lista negra no se esten ejecutando. Si se encuentra se elimina
+    Modelo BlackListApp contiene la lista negras de app
     """
     apps=models.BlackListApp.objects.all()
     for app in apps:
@@ -79,7 +81,7 @@ def check_promisc_app():
         if data_string == '': #No match
             continue
         add_to_alarm_log("App {} was found .  Log Result: -- \n{} \n -- ".format(name,data_string))
-
+        add_to_prevention_log("App {} was found. App was kill and sent to quarentine .  Log Result: -- \n{} \n -- ".format(name,data_string))
         #Prevention
         data= data_string.split('\n')
         data.pop() # Last element is just an empty string.
@@ -94,7 +96,7 @@ def check_promisc_app():
 def check_fail_auth_log_secure_smpt():
     """
     Look at the secure log if there was a multiple failed login attempt
-        """
+    """
 
     path=SecureLogDirectory.objects.all().first().path
     temp = datetime.datetime.now()
@@ -152,7 +154,7 @@ def check_acces_log():
 @shared_task
 def check_mailog():
     """
-    Look at the mailo log to check multiple email sent in a shor period time by a user
+    Look at the mail log to check multiple email sent in a shor period time by a user
         """  
     path=MailLogDirectory.objects.all().first().path
     temp = datetime.datetime.now()
@@ -169,6 +171,9 @@ def check_mailog():
     prevention_email(email_acount_counter,path) 
 @shared_task
 def check_mail_queue():
+    """
+    Check mailque, if lengh path limit, alarmos turn off
+    """  
     limit = MailQueueLimit.objects.all().first().qty
     command=subprocess.Popen("mailq", stdout=subprocess.PIPE, shell=True)
     (output, err) = command.communicate()
@@ -178,6 +183,9 @@ def check_mail_queue():
 
 @shared_task
 def check_consume_process():
+    """
+    Check all the process that pass the threshold consume over cpu_percent,memory_percent
+    """
     treshold=umodels.ProcessConsumeLimit.objects.all.first()
     max_cpu=treshold.max_cpu
     max_ram=treshold.max_ram
@@ -189,6 +197,9 @@ def check_consume_process():
 
 @shared_task
 def check_tmp_directory():
+    """
+        Check /tmp directory for file scripts
+    """
     for endpoint in umodels.ScriptType.objects.all():
         command=subprocess.Popen("ls /tmp/*.{}".format(endpoint), stdout=subprocess.PIPE, shell=True)
         (output, err) = command.communicate()
@@ -198,6 +209,9 @@ def check_tmp_directory():
             send_to_quarentine("/tmp/{}".format(file))
 @shared_task
 def check_cronjobs():
+    """
+        Check Cronjob list if ther are script file. IF so alarm off
+    """
     for endpoint in umodels.ScriptType.objects.all():
         command=subprocess.Popen("crontab -l | grep .{}".format(endpoint), stdout=subprocess.PIPE, shell=True)
         (output, err) = command.communicate()
@@ -207,6 +221,9 @@ def check_cronjobs():
 
 @shared_task
 def check_fail_login_attemp():
+    """
+        Count how many time a user fail attemp in a day
+    """
     threshold_fail_authentication_alarm=umodels.Threshold.objects.all().first().threshold_fail_authentication_alarm
     path=SecureLogDirectory.objects.all().first().path
     temp = datetime.datetime.now()

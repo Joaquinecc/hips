@@ -9,7 +9,10 @@ Djangop
 python 3.8
 Git
 Pipenv
+Send mail(For checking mail queue   )
 
+Instal sendmail
+yum install sendmail -y
 
 Install python python 3.8
 Follow guide 
@@ -97,3 +100,4 @@ change to md5
 /var/lib/pgsql/9.3/data/pg_hba.conf
 
 https://stackoverflow.com/questions/11339917/django-operationalerror-fatal-ident-authentication-failed-for-user-usernam
+yum install sendmail -y
