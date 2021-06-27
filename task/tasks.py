@@ -250,4 +250,16 @@ def check_fail_login_attempt_ssh():
     
 @shared_task
 def ddos_dns():
-    pass
+    path=umodels.DDosDirectory.objects.all().first().path
+    command=subprocess.Popen("grep -i ANY? "+ path, stdout=subprocess.PIPE, shell=True)
+    (output, err) = command.communicate()
+    data= output.decode("utf-8").split("\n")
+    data.pop() #Last element is just an empty string.
+    ip_failed_count={}
+    for line in data:
+        words=line.split()
+        ip = words[2].rsplit('.',1)[0] #remove the port
+        ip_failed_count[ip]= 1 if ip not in ip_failed_count  else ip_failed_count[ip]+1
+    prevention_ip_accces_log(ip_failed_count,path)
+
+

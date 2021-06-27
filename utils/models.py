@@ -19,7 +19,10 @@ class QuarentineDirectory(models.Model):
     path = models.CharField(max_length=500)
     def __str__(self) -> str:
         return self.path
-    
+class DDosDirectory(models.Model):
+    path = models.CharField(max_length=500)
+    def __str__(self) -> str:
+        return self.path
 class SecureLogDirectory(models.Model):
     path = models.CharField(max_length=500)
     def __str__(self) -> str:

@@ -14,6 +14,8 @@ admin.site.register(models.MailQueueLimit)
 admin.site.register(models.ProcessConsumeLimit)
 admin.site.register(models.ScriptType)
 admin.site.register(models.Threshold)
+admin.site.register(models.DDosDirectory)
+
 
 
 
