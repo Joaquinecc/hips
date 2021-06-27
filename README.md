@@ -10,6 +10,10 @@ python 3.8
 Git
 Pipenv
 Send mail(For checking mail queue   )
+iptable
+
+install iptable
+https://linuxize.com/post/how-to-install-iptables-on-centos-7/
 
 Instal sendmail
 yum install sendmail -y

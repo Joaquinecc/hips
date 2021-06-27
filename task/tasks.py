@@ -97,7 +97,6 @@ def check_fail_auth_log_secure_smpt():
     """
     Look at the secure log if there was a multiple failed login attempt
     """
-
     path=SecureLogDirectory.objects.all().first().path
     temp = datetime.datetime.now()
     date =temp.strftime("%b  %-d")
@@ -135,7 +134,7 @@ def check_fail_auth_log_messages_smpt():
 @shared_task
 def check_acces_log():
     """
-    Look at the secure log if there was a multiple failed login attempt
+    Look at the acces log if there was multple attemp to accees invalid page
         """  
     path=HttpAccesLogDirectory.objects.all().first().path
     temp = datetime.datetime.now()
@@ -179,8 +178,8 @@ def check_mail_queue():
     (output, err) = command.communicate()
     data= output.decode("utf-8").split('\n')
     if len(data) > limit:
-        pass
-
+        add_to_alarm_log("Mail queue pass. Log\n ".format(data))
+        
 @shared_task
 def check_consume_process():
     """
@@ -201,7 +200,7 @@ def check_tmp_directory():
         Check /tmp directory for file scripts
     """
     for endpoint in umodels.ScriptType.objects.all():
-        command=subprocess.Popen("ls /tmp/*.{}".format(endpoint), stdout=subprocess.PIPE, shell=True)
+        command=subprocess.Popen("ls /tmp/ | grep *.{}".format(endpoint), stdout=subprocess.PIPE, shell=True)
         (output, err) = command.communicate()
         for file in output.decode("utf-8").split('\n'):
             add_to_alarm_log("Found file {}  inside folder /tmp".format(file))
