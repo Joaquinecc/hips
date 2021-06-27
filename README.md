@@ -118,5 +118,5 @@ Calery beat
 `celery -A hips beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler`
 
 #### Comenzar
-Go to `http://localhost:8000`to access the tool
+Go to `http://localhost:8000/admin`to access the tool
 
