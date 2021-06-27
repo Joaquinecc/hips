@@ -55,12 +55,12 @@ def prevention_user(data,path):
         if data[username] > threshold_fail_authentication_prevention:
             add_to_prevention_log("Block user:{}. {} failed login attempt. Log: {} ".format(username,data[username],path))
             block_user(username)
-def prevention_ip_accces_log(data,path):
+def prevention_ip(data,path,message='error downloading pages.'):
     for ip in data:
         if data[ip] > threshold_fail_authentication_alarm:
             add_to_alarm_log("ip:{}. {} error downloading pages. Log {} ".format(ip,data[ip],path))
         if data[ip] > threshold_fail_authentication_prevention:
-            add_to_prevention_log("Block ip:{}. {} error downloading pages. Log {} ".format(ip,data[ip],path))
+            add_to_prevention_log("Block ip:{}. {} {} :Log {} ".format(ip,data[ip],message,path))
             block_ip(ip)
 def prevention_email(data,path):
     for email in data:

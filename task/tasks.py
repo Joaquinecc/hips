@@ -6,7 +6,7 @@ from utils.service import  add_to_alarm_log, add_to_prevention_log
 import subprocess
 from utils.models import PromiscuoDirectory,SecureLogDirectory,MessageLogDirectory,HttpAccesLogDirectory,MailLogDirectory,MailQueueLimit
 from utils import models as umodels
-from .service import kill_process,send_to_quarentine,block_user,prevention_user,prevention_ip_accces_log,prevention_email
+from .service import kill_process,send_to_quarentine,block_user,prevention_user,prevention_ip,prevention_email
 import datetime
 import psutil
 
@@ -148,7 +148,7 @@ def check_acces_log():
     for line in data:
         ip = line.split()[0]
         ip_count[ip]= 1 if ip not in ip_count  else ip_count[ip]+1
-    prevention_ip_accces_log(ip_count,path) 
+    prevention_ip(ip_count,path) 
     
 @shared_task
 def check_mailog():
@@ -260,6 +260,6 @@ def ddos_dns():
         words=line.split()
         ip = words[2].rsplit('.',1)[0] #remove the port
         ip_failed_count[ip]= 1 if ip not in ip_failed_count  else ip_failed_count[ip]+1
-    prevention_ip_accces_log(ip_failed_count,path)
+    prevention_ip(ip_failed_count,path,message="ddos attack")
 
 
