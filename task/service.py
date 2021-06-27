@@ -58,7 +58,7 @@ def prevention_user(data,path):
 def prevention_ip(data,path,message='error downloading pages.'):
     for ip in data:
         if data[ip] > threshold_fail_authentication_alarm:
-            add_to_alarm_log("ip:{}. {} error downloading pages. Log {} ".format(ip,data[ip],path))
+            add_to_alarm_log("ip:{}. {} {} . Log {} ".format(ip,data[ip],message,path))
         if data[ip] > threshold_fail_authentication_prevention:
             add_to_prevention_log("Block ip:{}. {} {} :Log {} ".format(ip,data[ip],message,path))
             block_ip(ip)
