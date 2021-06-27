@@ -28,7 +28,7 @@ Funciones:
 #### Instalar iptable. 
 Guía: https://linuxize.com/post/how-to-install-iptables-on-centos-7/
 
-#### Instalarsendmail
+#### Instalar sendmail
 yum install sendmail -y
 
 #### Instalar  Python 3.8
@@ -36,13 +36,15 @@ Guía: https://computingforgeeks.com/how-to-install-python-3-on-centos/
 
 #### Instalar  Rabbitmql in Centos 8
 
-Guía:https://www.rabbitmq.com/install-rpm.html
+Guía: https://www.rabbitmq.com/install-rpm.html
 
 Comenzar servicio. Ejecutar.
 
-`/sbin/service rabbitmq-server start`
+ ```
+/sbin/service rabbitmq-server start
 
-`/sbin/service rabbitmq-server status`
+/sbin/service rabbitmq-server status`
+ ```
 
 #### Instalar Posgresql
 
@@ -61,37 +63,60 @@ Comenzar servicio. Ejecutar
 `yum install sendmail -y`
 
 
-## Intalación:
+## Instalación:
 
 #### Clonar projecto
 
 `git clone https://github.com/Joaquinecc/hips.git`
 
-Install some dependecies 
-
+#### Instalar algunas dependencias
+ ```
 sudo yum groupinstall "Development Tools"
+
 sudo yum install python3-devel
+
 sudo yum install postgresql-libs
+
 sudo yum install postgresql-devel
+ ```
+#### Archivo de Configuración (secrets.json)
+ ```
+{
+    "allowed_hosts": ["localhost", "127.0.0.1","*"],
+    "db_name": "db_name",
+    "db_user": "db_user",
+    "db_password": "db_password",
+    "db_host": "localhost",
+    "db_port": "db_port",
+    "secret_key": "secret_key",
+    "debug": true or false ,
+    "ADMIN_EMAIL_ADDRESS":"example@email.com",
+    "EMAIL_HOST_PASSWORD":"password123"
+  }
+ ```
+#### Activar Entorno virtual.
 
-Then run
-pipenv install
+`pipenv install`
 
-python manage.py migrate
+#### Crear Tables
 
-python manage.py createsuperuser
+`python manage.py migrate`
 
-python manage.py runserver 0.0.0.0:80
+#### Crear un usuario admin
 
-celery -A hips worker -l INFO
+`python manage.py createsuperuser`
 
-celery -A hips beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+#### Comenzar Servicios
 
+Django.
+`python manage.py runserver 0.0.0.0:80`
 
-if choose to use postrgres user
+Celery worker
+`celery -A hips worker -l INFO`
 
-change to md5
-/var/lib/pgsql/9.3/data/pg_hba.conf
+Calery beat
+`celery -A hips beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler`
 
-https://stackoverflow.com/questions/11339917/django-operationalerror-fatal-ident-authentication-failed-for-user-usernam
-yum install sendmail -y
+#### Comenzar
+Go to `http://localhost:8000`to access the tool
+
