@@ -219,26 +219,33 @@ def check_cronjobs():
             add_to_alarm_log("Found script type {} on crontab list.\n Log: \n {}".format(endpoint,data))
 
 @shared_task
-def check_fail_login_attemp():
+def check_fail_login_attempt_ssh():
     """
-        Count how many time a user fail attemp in a day
+        Count how many time a user fail attemp in a day. Service =sshd
     """
     threshold_fail_authentication_alarm=umodels.Threshold.objects.all().first().threshold_fail_authentication_alarm
-    path=SecureLogDirectory.objects.all().first().path
+    # path=SecureLogDirectory.objects.all().first().path
+    path='/var/log/secure'
     temp = datetime.datetime.now()
-    date =temp.strftime("%b  %-d")
-    command=subprocess.Popen("grep -i "+'"'+ date+'"' +" " +path+ " | grep -i \"authentication failure\"", stdout=subprocess.PIPE, shell=True)
+    date =temp.strftime("%b %-d")
+    command=subprocess.Popen("grep -i "+'"'+ date+'"' +" " +path+ " | grep -i \"authentication failure\" | grep -i sshd", stdout=subprocess.PIPE, shell=True)
     (output, err) = command.communicate()
-    data_string= output.decode("utf-8")
-    data=data_string.split("\n")
+    data= output.decode("utf-8").split("\n")
     data.pop() #Last element is just an empty string.
     user_failed_count={}
+    ip_failed_count={}
     for line in data:
-        username = line.split()[-1].replace("user=","")
+        words=line.split()
+        username = words[-1].replace("user=","")
+        ip = words[-2].replace("rhost=","")
         user_failed_count[username]= 1 if username not in user_failed_count  else user_failed_count[username]+1
+        ip_failed_count[ip]= 1 if ip not in ip_failed_count  else ip_failed_count[ip]+1
     for username in user_failed_count:
         if user_failed_count[username] > threshold_fail_authentication_alarm:
             add_to_alarm_log("user:{}. {} failed login attempt. Log: {} ".format(username,user_failed_count[username],path))
+    for ip in ip_failed_count:
+            if ip_failed_count[ip] > threshold_fail_authentication_alarm:
+                add_to_alarm_log("ip:{}. {} failed login attempt. Log: {} ".format(ip,ip_failed_count[ip],path))
 
     
 @shared_task
