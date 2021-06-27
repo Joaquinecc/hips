@@ -200,12 +200,12 @@ def check_tmp_directory():
         Check /tmp directory for file scripts
     """
     for endpoint in umodels.ScriptType.objects.all():
-        command=subprocess.Popen("ls /tmp/ | grep *.{}".format(endpoint), stdout=subprocess.PIPE, shell=True)
+        command=subprocess.Popen("ls /tmp/*.{}".format(endpoint), stdout=subprocess.PIPE, shell=True)
         (output, err) = command.communicate()
         for file in output.decode("utf-8").split('\n'):
             add_to_alarm_log("Found file {}  inside folder /tmp".format(file))
             add_to_prevention_log("Send to quarantine file {} found inside folder /tmp".format(file))
-            send_to_quarentine("/tmp/{}".format(file))
+            send_to_quarentine(file)
 @shared_task
 def check_cronjobs():
     """
