@@ -47,9 +47,9 @@ def block_user(username):
     return output.decode("utf-8")
 def block_email(email):
     # https://stackoverflow.com/questions/492387/indentationerror-unindent-does-not-match-any-outer-indentation-level
-    p =subprocess.Popen("echo \""+email+"           REJECT\">>/etc/mail/access", stdout=subprocess.PIPE, shell=True)
+    p =subprocess.Popen("echo \""+email+"               REJECT\">>/etc/mail/access", stdout=subprocess.PIPE, shell=True)
     (output, err) = p.communicate()
-    p =subprocess.Popen("m4 /etc/mail/sendmail.mc > /etc/mail/sendmail.cf", stdout=subprocess.PIPE, shell=True)
+    p =subprocess.Popen("cd /etc/mail && ./make", stdout=subprocess.PIPE, shell=True)
     (output, err) = p.communicate()
     p=subprocess.Popen("systemctl restart sendmail", stdout=subprocess.PIPE, shell=True)
     (output, err) = p.communicate()
