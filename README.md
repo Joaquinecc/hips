@@ -1,3 +1,5 @@
+Desarrolado en python 3 en conjunto con el framewor django
+
 # HIPS SO 2 PROJECT
 Trabajo Practico de la clase SO2. Diseño de un sistema hips.
 Funciones:
