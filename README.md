@@ -111,7 +111,7 @@ sudo yum install postgresql-devel
 #### Comenzar Servicios
 
 Django.
-`python manage.py runserver 0.0.0.0:80`
+`python manage.py runserver <ip>:<puerto>
 
 Celery worker
 `celery -A hips worker -l INFO`
@@ -120,5 +120,5 @@ Calery beat
 `celery -A hips beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler`
 
 #### Comenzar
-Go to `http://localhost:8000/admin`to access the tool
+Go to `http://<ip>:<puerto>/admin`to access the tool
 
